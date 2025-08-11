@@ -11,7 +11,10 @@ target_include_directories(standardese_tool PUBLIC $<BUILD_INTERFACE:${THREADPOO
 set_target_properties(standardese_tool PROPERTIES OUTPUT_NAME standardese CXX_STANDARD 17)
 
 # link Boost
-find_package(Boost COMPONENTS program_options filesystem system REQUIRED)
+find_package(Boost COMPONENTS program_options filesystem REQUIRED)
+if(Boost_MAJOR_VERSION EQUAL 1 AND Boost_MINOR_VERSION LESS 69)
+    find_package(Boost COMPONENTS program_options filesystem system REQUIRED)
+endif()
 target_include_directories(standardese_tool PUBLIC ${Boost_INCLUDE_DIR})
 target_link_libraries(standardese_tool PUBLIC ${Boost_LIBRARIES})
 
