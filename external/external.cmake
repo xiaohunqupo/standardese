@@ -35,8 +35,9 @@ if((NOT CMARK_LIBRARY) OR (NOT CMARK_INCLUDE_DIR))
 
     # add and exclude targets
     add_subdirectory(external/cmark ${CMAKE_CURRENT_BINARY_DIR}/cmark EXCLUDE_FROM_ALL)
-    set_target_properties(api_test PROPERTIES EXCLUDE_FROM_ALL 1)
-
+    if(CMARK_TESTS AND (CMARK_SHARED OR CMARK_STATIC))
+      set_target_properties(api_test PROPERTIES EXCLUDE_FROM_ALL 1)
+    endif()
     # fixup target properties
     target_include_directories(libcmark-gfm_static SYSTEM PUBLIC
                                $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/cmark/src>
