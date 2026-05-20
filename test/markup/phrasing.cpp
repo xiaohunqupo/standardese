@@ -20,7 +20,7 @@ TEST_CASE("text", "[markup]")
     auto b = text::build("Hello\nWorld!");
     REQUIRE(as_html(*b) == "Hello\nWorld!");
     REQUIRE(as_xml(*b) == as_html(*b));
-    REQUIRE(as_markdown(*b) == "Hello\nWorld\\!\n");
+    REQUIRE(as_markdown(*b) == "Hello&#10;World\\!\n");
 
     auto c = text::build("<html>&\"'</html>");
     REQUIRE(as_html(*c) == "&lt;html&gt;&amp;&quot;&#x27;&lt;&#x2F;html&gt;");
