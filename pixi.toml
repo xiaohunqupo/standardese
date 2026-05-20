@@ -1,0 +1,32 @@
+[workspace]
+channels = ["conda-forge"]
+platforms = ["osx-64", "osx-arm64", "linux-64"]
+preview = ["pixi-build"]
+
+[dependencies]
+cxx-compiler = "*"
+c-compiler = "*"
+cmake = ">=3.5"
+boost-cpp = "*"
+clangdev = "*"
+coreutils = "*"
+ninja = "*"
+
+[tasks.configure]
+cmd = ["cmake", "-Bbuild", "-GNinja", "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"]
+inputs = ["CMakeLists.txt", "**/CMakeLists.txt", "external/external.cmake"]
+outputs = ["build/CMakeFiles/"]
+
+[tasks.build]
+depends-on = ["configure"]
+cwd = "build"
+cmd = ["cmake", "--build", "."]
+
+[tasks.standardese]
+depends-on = ["build"]
+cmd = "./build/tool/standardese"
+
+[tasks.test]
+depends-on = ["build"]
+cwd = "build"
+cmd = "./test/standardese_test"

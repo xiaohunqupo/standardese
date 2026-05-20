@@ -98,7 +98,9 @@ Standardese is also packaged for docker at [`standardese/standardese`](https://h
 
 ### Building From Source
 
-To build standardese run:
+We recommend you install [pixi](https://pixi.sh) and run `pixi run build`. Run `pixi run test` to run the test suite and `pixi run standardese` to execute the standardese binary.
+
+Alternatively, you can do:
 
 ```
 mkdir build

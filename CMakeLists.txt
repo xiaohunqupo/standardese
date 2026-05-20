@@ -2,7 +2,7 @@
 # This file is subject to the license terms in the LICENSE file
 # found in the top-level directory of this distribution.
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 project(STANDARDESE VERSION 0.5.2)
 
 option(STANDARDESE_BUILD_TOOL "Build the standardese binary" ON)
@@ -38,5 +38,5 @@ if (STANDARDESE_BUILD_TEST)
 endif()
 
 # install configuration
-#install(EXPORT standardese DESTINATION "${lib_dest}")
-#install(FILES standardese-config.cmake LICENSE DESTINATION "${lib_dest}")
+install(EXPORT standardese DESTINATION "${lib_dest}")
+install(FILES standardese-config.cmake LICENSE DESTINATION "${lib_dest}")
