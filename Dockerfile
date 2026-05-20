@@ -1,18 +1,18 @@
-FROM ubuntu:20.04 AS run-dependencies
+FROM ubuntu:24.04 AS run-dependencies
 
 # We make an effort here to shrink the resulting image by dropping all the
 # static libraries.  It would probably be better not to install any of these
 # libraries and build a static standardese binary.
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive TZ=UTC apt-get install -y \
-    libboost-program-options1.71 \
-    libboost-filesystem1.71 \
+    libboost-program-options1.83 \
+    libboost-filesystem1.83 \
     libclang-dev \
     clang \
   && rm -rf /var/lib/apt/lists/* \
   && find /usr/lib -name '*.a' -exec rm \{\} \;
 
-FROM ubuntu:20.04 AS build-dependencies
+FROM ubuntu:24.04 AS build-dependencies
 
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive TZ=UTC apt-get install -y \
