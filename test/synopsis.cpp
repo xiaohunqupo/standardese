@@ -66,11 +66,15 @@ ns::foo<ns::foo<int>> make();
 </code-block>
 )");
 
-        auto& foo          = get_named_entity(*file, "foo");
-        auto  foo_synopsis = generate_synopsis({}, index, foo);
-        REQUIRE(
-            markup::as_xml(*foo_synopsis)
-            == R"*(<code-block language="cpp"><code-block-keyword>template</code-block-keyword> <code-block-punctuation>&lt;</code-block-punctuation><code-block-keyword>typename</code-block-keyword> <code-block-identifier>T</code-block-identifier><code-block-punctuation>&gt;</code-block-punctuation><soft-break></soft-break>
+        auto&             foo          = get_named_entity(*file, "foo");
+        auto              foo_synopsis = generate_synopsis({}, index, foo);
+        const std::string foo_xml      = markup::as_xml(*foo_synopsis);
+        // libclang tokenizes the copy-constructor parameter type differently
+        // across platforms/versions: some emit `const foo<T>` as a single raw
+        // blob, others split it into separate keyword/identifier tokens.
+        // Here we accept both versions.
+        REQUIRE((foo_xml
+                     == R"*(<code-block language="cpp"><code-block-keyword>template</code-block-keyword> <code-block-punctuation>&lt;</code-block-punctuation><code-block-keyword>typename</code-block-keyword> <code-block-identifier>T</code-block-identifier><code-block-punctuation>&gt;</code-block-punctuation><soft-break></soft-break>
 <code-block-keyword>struct</code-block-keyword> <code-block-identifier>foo</code-block-identifier><soft-break></soft-break>
 <code-block-punctuation>{</code-block-punctuation><soft-break></soft-break>
     <code-block-keyword>int</code-block-keyword> <code-block-identifier>member</code-block-identifier><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
@@ -84,7 +88,23 @@ ns::foo<ns::foo<int>> make();
     <code-block-keyword>void</code-block-keyword> <code-block-identifier>do_sth</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-keyword>float</code-block-keyword><code-block-punctuation>)</code-block-punctuation> <code-block-keyword>const</code-block-keyword> <code-block-keyword>volatile</code-block-keyword> <code-block-punctuation>&amp;&amp;</code-block-punctuation> <code-block-keyword>noexcept</code-block-keyword><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
 <code-block-punctuation>};</code-block-punctuation><soft-break></soft-break>
 </code-block>
-)*");
+)*"
+                 || foo_xml
+                        == R"*(<code-block language="cpp"><code-block-keyword>template</code-block-keyword> <code-block-punctuation>&lt;</code-block-punctuation><code-block-keyword>typename</code-block-keyword> <code-block-identifier>T</code-block-identifier><code-block-punctuation>&gt;</code-block-punctuation><soft-break></soft-break>
+<code-block-keyword>struct</code-block-keyword> <code-block-identifier>foo</code-block-identifier><soft-break></soft-break>
+<code-block-punctuation>{</code-block-punctuation><soft-break></soft-break>
+    <code-block-keyword>int</code-block-keyword> <code-block-identifier>member</code-block-identifier><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
+<soft-break></soft-break>
+    <code-block-identifier>foo</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-identifier>foo&lt;T&gt;</code-block-identifier> <code-block-keyword>const</code-block-keyword><code-block-punctuation>&amp;</code-block-punctuation> <code-block-identifier>f</code-block-identifier><code-block-punctuation>)</code-block-punctuation> <code-block-punctuation>=</code-block-punctuation> <code-block-keyword>default</code-block-keyword><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
+<soft-break></soft-break>
+    //=== do_sth ===//<soft-break></soft-break>
+    <code-block-keyword>void</code-block-keyword> <code-block-identifier>do_sth</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-punctuation>)</code-block-punctuation> <code-block-keyword>const</code-block-keyword><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
+    <code-block-keyword>void</code-block-keyword> <code-block-identifier>do_sth</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-keyword>int</code-block-keyword><code-block-punctuation>)</code-block-punctuation> <code-block-keyword>noexcept</code-block-keyword><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
+    <code-block-keyword>void</code-block-keyword> <code-block-identifier>do_sth</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-keyword>float</code-block-keyword><code-block-punctuation>)</code-block-punctuation> <code-block-punctuation>&amp;&amp;</code-block-punctuation><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
+    <code-block-keyword>void</code-block-keyword> <code-block-identifier>do_sth</code-block-identifier><code-block-punctuation>(</code-block-punctuation><code-block-keyword>float</code-block-keyword><code-block-punctuation>)</code-block-punctuation> <code-block-keyword>const</code-block-keyword> <code-block-keyword>volatile</code-block-keyword> <code-block-punctuation>&amp;&amp;</code-block-punctuation> <code-block-keyword>noexcept</code-block-keyword><code-block-punctuation>;</code-block-punctuation><soft-break></soft-break>
+<code-block-punctuation>};</code-block-punctuation><soft-break></soft-break>
+</code-block>
+)*"));
     }
     SECTION("friend")
     {
