@@ -20,6 +20,6 @@ jobs:
     - uses: prefix-dev/setup-pixi@v0.9.4
       with: { pixi-version: v0.68.0 }
     - name: run standardese
-      run: pixi run standardese
+      run: pixi run standardese include/standardese/logger.hpp
     - name: run tests
       run: pixi run test
